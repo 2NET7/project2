@@ -28,7 +28,9 @@ class Pengaduan extends Model
         'bukti',
         'korban_jiwa',
         'kerusakan_infrastruktur',
-        'kerusakan_material'
+        'kerusakan_material',
+        'verifikasi',
+        'tindak_lanjut_status'
     ];
 
     protected $dates = ['tanggal', 'created_at', 'updated_at'];

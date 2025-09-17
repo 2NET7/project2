@@ -129,10 +129,14 @@ export default function ReportScreen() {
       let location = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = location.coords;
 
-      const dummyAddress = `Jalan Contoh No. 123, Desa Dummy, Kecamatan Dummy, Subang`;
-      const alamatGabungan = `${dummyAddress}|||${latitude},${longitude}`;
+
+      // Ambil alamat asli dari reverse geocoding
+      let [geo] = await Location.reverseGeocodeAsync({ latitude, longitude });
+      let alamatTeks = geo
+        ? [geo.street, geo.name, geo.subregion, geo.region, geo.postalCode, geo.country].filter(Boolean).join(', ')
+        : `Lokasi: ${latitude},${longitude}`;
+      const alamatGabungan = `${alamatTeks}|||${latitude},${longitude}`;
       setAlamat(alamatGabungan);
-      
       Alert.alert('Lokasi Ditemukan', 'Alamat berhasil diisi secara otomatis.');
 
     } catch (error) {

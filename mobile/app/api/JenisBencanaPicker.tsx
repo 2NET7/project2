@@ -16,14 +16,20 @@ const JenisBencanaPicker: React.FC<JenisBencanaPickerProps> = ({
   customJenisBencana,
   setCustomJenisBencana,
 }) => {
-  const jenisBencanaList = [
-    'Banjir',
-    'Longsor',
-    'Kebakaran',
-    'Angin Kencang',
-    'Gempa Bumi',
-    'Lainnya',
-  ];
+
+  const [jenisBencanaList, setJenisBencanaList] = React.useState<string[]>([]);
+  React.useEffect(() => {
+    fetch('http://192.168.50.5:8000/api/jenis-bencana')
+      .then(res => res.json())
+      .then(json => {
+        if (Array.isArray(json.data)) {
+          setJenisBencanaList([...json.data.map((j: any) => j.nama_jenis), 'Lainnya']);
+        } else {
+          setJenisBencanaList(['Lainnya']);
+        }
+      })
+      .catch(() => setJenisBencanaList(['Lainnya']));
+  }, []);
 
   return (
     <View>

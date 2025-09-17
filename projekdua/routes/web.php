@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 use App\Http\Controllers\HomeController;
@@ -16,9 +16,11 @@ use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;
 use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\EdukasiBencanaController;
 use App\Http\Controllers\PenyuluhanController;
 use App\Http\Controllers\PemetaanLokasiBencanaController;
+use App\Http\Controllers\RekapPenangananController;
 
 // Route untuk guest (belum login)
 Route::middleware('guest')->group(function () {
@@ -35,8 +37,12 @@ Route::middleware('guest')->group(function () {
 // Route untuk user yang sudah login
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
-        return redirect('/dashboard');
+        return redirect()->route('dashboard');
     });
+
+
+    // Tambah route Rekap Penanganan di dalam group auth
+    Route::get('rekap-penanganan', [RekapPenangananController::class, 'index'])->name('rekap-penanganan.index');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [UserProfileController::class, 'show'])->name('profile');
@@ -56,6 +62,7 @@ Route::middleware('auth')->group(function () {
 
     // Resource Routes
     Route::resource('pengguna', PenggunaController::class);
+    Route::resource('post', PostController::class);
     Route::resource('edukasi-bencana', EdukasiBencanaController::class);
 
     Route::resource('penyuluhan', PenyuluhanController::class);

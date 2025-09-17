@@ -1,3 +1,8 @@
+// Post News API
+use App\Http\Controllers\Api\PostApiController;
+
+Route::get('/posts', [PostApiController::class, 'index']);
+Route::get('/posts/{id}', [PostApiController::class, 'show']);
 <?php
 
 use Illuminate\Http\Request;

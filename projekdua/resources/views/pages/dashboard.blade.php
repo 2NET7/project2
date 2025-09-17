@@ -2,6 +2,12 @@
 
 @section('content')
     @include('layouts.navbars.auth.topnav', ['title' => 'Dashboard'])
+    <style>
+        /* Sembunyikan elemen yang menampilkan repository/path/kode di atas dashboard */
+        body > pre, body > code, body > .repository-path, .repository-path, .breadcrumb, .top-path {
+            display: none !important;
+        }
+    </style>
     <div class="container-fluid py-4">
         @if(session('success'))
             <script>

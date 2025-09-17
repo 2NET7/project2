@@ -78,35 +78,46 @@ class PengaduanController extends Controller
 
     public function update(Request $request, Pengaduan $pengaduan)
     {
+
         $request->validate([
-            'tanggal' => 'required|date',
-            'nama_pelapor' => 'required|string|max:255',
-            'jenis_pengaduan' => 'required|string|max:255',
-            'deskripsi' => 'required|string',
             'status' => 'required|in:Menunggu,Proses,Selesai',
-            'feedback' => 'nullable|string',
             'bukti.*' => 'nullable|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240',
+            'bukti_penanganan.*' => 'nullable|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240',
             'korban_jiwa' => 'nullable|integer',
-            'kerusakan_infrastruktur' => 'nullable|integer',
-            'kerusakan_material' => 'nullable|integer',
+            'kerusakan_infrastruktur' => 'nullable|string',
+            'kerusakan_material' => 'nullable|string',
+            'verifikasi' => 'nullable|in:diterima,ditolak',
+            'tindak_lanjut_status' => 'nullable|in:Menunggu,Proses,Selesai',
         ]);
 
-        $data = $request->except('bukti');
+        // Hanya ambil field yang boleh diubah
+        $data = $request->only([
+            'status',
+            'korban_jiwa',
+            'kerusakan_infrastruktur',
+            'kerusakan_material',
+            'verifikasi',
+            'tindak_lanjut_status',
+        ]);
 
+        // Bukti dari masyarakat (tidak diubah di edit, hanya ditampilkan)
         $buktiLama = [];
         if ($pengaduan->bukti) {
             $buktiLama = json_decode($pengaduan->bukti, true) ?? [];
         }
-        if ($request->hasFile('bukti')) {
-            foreach ($request->file('bukti') as $file) {
-                $buktiLama[] = $file->store('bukti', 'public');
+
+        // Bukti penanganan admin (bukti_penanganan)
+        $buktiPenanganan = $buktiLama;
+        if ($request->hasFile('bukti_penanganan')) {
+            foreach ($request->file('bukti_penanganan') as $file) {
+                $buktiPenanganan[] = $file->store('bukti', 'public');
             }
         }
-        $data['bukti'] = json_encode($buktiLama);
+        $data['bukti'] = json_encode($buktiPenanganan);
 
         $pengaduan->update($data);
 
-        return redirect()->route('pengaduan.index')
+        return redirect()->route('pengaduan.show', $pengaduan->id)
             ->with('success', 'Pengaduan berhasil diperbarui');
     }
 

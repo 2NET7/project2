@@ -21,52 +21,28 @@
                                             <td>: {{ $pengaduan->tanggal->format('d F Y') }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Waktu</th>
-                                            <td>: {{ $pengaduan->waktu }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Jenis Pengaduan</th>
-                                            <td>: {{ $pengaduan->jenis_pengaduan }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Nama Pelapor</th>
-                                            <td>: {{ $pengaduan->nama_pelapor }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Status</th>
-                                            <td>: {{ $pengaduan->status }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-md-6">
-                                <table class="table table-borderless">
+                                                                <tr>
+                                                                    <th style="width: 150px;">Nama Pelapor</th>
+                                                                    <td>: {{ $pengaduan->nama_pelapor }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>Tanggal</th>
+                                                                    <td>: {{ $pengaduan->tanggal instanceof \Carbon\Carbon ? $pengaduan->tanggal->format('d F Y') : date('d F Y', strtotime($pengaduan->tanggal)) }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>Jenis Pengaduan</th>
+                                                                    <td>: {{ $pengaduan->jenis_pengaduan }}</td>
+                                                                </tr>
                                     <tbody>
                                         <tr>
                                             <th style="width: 150px;">Kecamatan</th>
                                             <td>: {{ $pengaduan->kecamatan }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Desa</th>
-                                            <td>: {{ $pengaduan->desa }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Alamat</th>
-                                            <td>: {{ explode('|||', $pengaduan->alamat)[0] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Korban Jiwa</th>
-                                            <td>: {{ $pengaduan->korban_jiwa ?? '-' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Kerusakan</th>
-                                            <td>: {{ $pengaduan->kerusakan_infrastruktur ?? '-' }} Infrastruktur, {{ $pengaduan->kerusakan_material ?? '-' }} Material</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
+                                                                <tr>
+                                                                    <th>Deskripsi</th>
+                                                                    <td>: {{ $pengaduan->deskripsi }}</td>
+                                                                </tr>
                         <hr>
 
                         <h6>Deskripsi Laporan</h6>
@@ -98,6 +74,45 @@
                                 <div class="col-12">
                                     <p>Tidak ada bukti media.</p>
                                 </div>
+                                                <hr>
+                                                <h6>Data Penanganan & Verifikasi (Admin)</h6>
+                                                <table class="table table-borderless">
+                                                    <tr>
+                                                        <th style="width:200px;">Status Verifikasi</th>
+                                                        <td>: {{ $pengaduan->verifikasi ? ucfirst($pengaduan->verifikasi) : '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Status Tindak Lanjut</th>
+                                                        <td>: {{ $pengaduan->tindak_lanjut_status ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Keterangan Korban Jiwa</th>
+                                                        <td>: {{ $pengaduan->korban_jiwa ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Kerusakan Infrastruktur</th>
+                                                        <td>: {{ $pengaduan->kerusakan_infrastruktur ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Kerusakan Material</th>
+                                                        <td>: {{ $pengaduan->kerusakan_material ?? '-' }}</td>
+                                                    </tr>
+                                                </table>
+                                                <h6>Bukti Penanganan</h6>
+                                                <div class="row">
+                                                    @php
+                                                        $buktiPenanganan = json_decode($pengaduan->bukti, true) ?? [];
+                                                    @endphp
+                                                    @forelse($buktiPenanganan as $bukti)
+                                                        <div class="col-md-4 mb-3">
+                                                            <img src="{{ asset('storage/' . $bukti) }}" class="img-fluid rounded" alt="Bukti Penanganan">
+                                                        </div>
+                                                    @empty
+                                                        <div class="col-12">
+                                                            <p>Belum ada bukti penanganan.</p>
+                                                        </div>
+                                                    @endforelse
+                                                </div>
                             @endforelse
                         </div>
 

@@ -1,61 +1,63 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList, StatusBar, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList, StatusBar, ScrollView, ActivityIndicator } from 'react-native';
 import React from 'react';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context'; // Import useSafeAreaInsets
 
-// Dummy data Anda tetap sama
-const disasters = [
-  { id: 1, name: "Tanah Longsor", image: require('@/assets/images/Longsor.png') },
-  { id: 2, name: "Gempa Bumi", image: require('@/assets/images/Gempa.png') },
-  { id: 3, name: "Banjir", image: require('@/assets/images/Banjir.png') },
-  { id: 4, name: "Erupsi Gunung Berapi", image: require('@/assets/images/Erupsi.png') },
-  { id: 5, name: "Angin Puting Beliung", image: require('@/assets/images/Tornado.png') },
-  { id: 6, name: "Tsunami", image: require('@/assets/images/Tsunami.png') }
-];
 
-const DisasterListPage: React.FC = () => {
+import { useEffect, useState } from 'react';
+import { API_URL } from '../api/config';
+
+const EdukasiBencana: React.FC = () => {
   const router = useRouter();
-  const insets = useSafeAreaInsets(); // Dapatkan insets untuk area aman
+  const insets = useSafeAreaInsets();
+  const [disasters, setDisasters] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_URL}/jenis-bencana`)
+      .then(res => res.json())
+      .then(json => {
+        setDisasters(Array.isArray(json.data) ? json.data : []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const handlePress = (name: string) => {
-    console.log(`Selected Disaster: ${name}`);
     router.push({ pathname: '/(tabs)/ListEdukasiByJenis', params: { jenis: name } });
   };
 
-  // Komponen renderItem untuk FlatList
-  const renderDisasterItem = ({ item }: { item: typeof disasters[0] }) => (
+  const renderDisasterItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       key={item.id}
-      style={styles.gridItem} // Gunakan gaya baru untuk item grid
-      onPress={() => handlePress(item.name)}>
-      <Image source={item.image} style={styles.itemImage} /> {/* Gunakan gaya baru */}
-      <Text style={styles.itemText}>{item.name}</Text> {/* Gunakan gaya baru */}
+      style={styles.gridItem}
+      onPress={() => handlePress(item.nama_jenis)}>
+      {/* Gambar bisa diambil dari item.image_url jika ada di API */}
+      <Image source={require('@/assets/images/Banjir.png')} style={styles.itemImage} />
+      <Text style={styles.itemText}>{item.nama_jenis}</Text>
     </TouchableOpacity>
   );
 
+  if (loading) {
+    return <View style={styles.container}><ActivityIndicator size="large" color="#D48442" style={{marginTop: 40}} /></View>;
+  }
   return (
     <View style={styles.container}>
-      {/* StatusBar untuk konsistensi warna */}
       <StatusBar barStyle="light-content" backgroundColor="#D48442" />
-
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 10 }]}> {/* Sesuaikan padding top dengan insets */}
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}> 
         <TouchableOpacity style={styles.backButton} onPress={() => router.push('/Homepage')}>
           <AntDesign name="arrowleft" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.headerText}>Edukasi Bencana</Text>
-        {/* Tambahkan View kosong sebagai penyeimbang jika ada tombol kanan */}
         <View style={{ width: 24 }} />
       </View>
-
-      {/* Disaster List */}
-      <FlatList // Gunakan FlatList untuk performa lebih baik pada list panjang
+      <FlatList
         data={disasters}
         renderItem={renderDisasterItem}
         keyExtractor={(item) => item.id.toString()}
-        numColumns={2} // Tampilkan 2 kolom
-        contentContainerStyle={styles.gridContainer} // Gaya untuk FlatList container
+        numColumns={2}
+        contentContainerStyle={styles.gridContainer}
       />
     </View>
   );
@@ -127,4 +129,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DisasterListPage;
+export default EdukasiBencana;

@@ -30,7 +30,7 @@
                     <span class="nav-link-text ms-1">Profile</span>
                 </a>
             </li> --}}
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'edukasi-bencana.index' ? 'active' : '' }}" href="{{ route('edukasi-bencana.index') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -38,7 +38,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Data Edukasi Bencana</span>
                 </a>
-            </li>
+            </li> -->
             <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'pengaduan.index' ? 'active' : '' }}" href="{{ route('pengaduan.index') }}">
                     <div
@@ -46,6 +46,14 @@
                         <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Data Pengaduan</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Route::currentRouteName() == 'rekap-penanganan.index' ? 'active' : '' }}" href="{{ route('rekap-penanganan.index') }}">
+                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="ni ni-archive-2 text-warning text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Rekap Penanganan</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -57,12 +65,20 @@
                     <span class="nav-link-text ms-1">Data Pengguna</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'penyuluhan.index' ? 'active' : '' }}" href="{{ route('penyuluhan.index') }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1"> Data Jadwal Penyuluhan</span>
+                </a>
+            </li> -->
+            <li class="nav-item">
+                <a class="nav-link {{ Route::currentRouteName() == 'post.index' ? 'active' : '' }}" href="{{ route('post.index') }}">
+                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="ni ni-send text-danger text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Post News</span>
                 </a>
             </li>
             <li class="nav-item">

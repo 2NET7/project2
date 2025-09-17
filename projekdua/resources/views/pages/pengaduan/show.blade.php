@@ -30,104 +30,116 @@
                             <!-- Kolom Data Laporan -->
                             <div class="col-md-6 mb-3">
                                 <h5 class="mb-3">Data Laporan</h5>
-                                <table class="table table-borderless table-sm">
-                                    <tr>
-                                        <th class="ps-0" style="width: 120px;">Tanggal</th>
-                                        <td>: {{ date('d/m/Y', strtotime($pengaduan->tanggal)) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Waktu</th>
-                                        <td>: {{ $pengaduan->waktu }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Jenis</th>
-                                        <td>: {{ $pengaduan->jenis_pengaduan }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Kecamatan</th>
-                                        <td>: {{ $pengaduan->kecamatan }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Desa</th>
-                                        <td>: {{ $pengaduan->desa }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Alamat</th>
-                                        @php
-                                            $alamat = $pengaduan->alamat;
-                                            $alamatParts = explode('|||', $alamat);
-                                            $alamatTeks = $alamatParts[0];
-                                            $koordinat = isset($alamatParts[1]) ? $alamatParts[1] : null;
-                                        @endphp
-                                        <td>:
-                                            @if($koordinat)
-                                                <a href="https://maps.google.com/?q={{ $koordinat }}" target="_blank">{{ $alamatTeks }}</a>
+                                <div class="border rounded p-3 mb-4 bg-light">
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Tanggal</label>
+                                            <input type="text" class="form-control" value="{{ date('d/m/Y', strtotime($pengaduan->tanggal)) }}" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Nama Pelapor</label>
+                                            <input type="text" class="form-control" value="{{ $pengaduan->nama_pelapor }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Jenis Pengaduan</label>
+                                            <input type="text" class="form-control" value="{{ $pengaduan->jenis_pengaduan }}" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Alamat</label>
+                                            @if($pengaduan->alamat)
+                                                <a href="https://www.google.com/maps/search/{{ urlencode($pengaduan->alamat) }}" target="_blank" class="form-control bg-transparent text-primary" style="border:none; padding-left:0;">{{ $pengaduan->alamat }}</a>
                                             @else
-                                                {{ $alamatTeks }}
+                                                <input type="text" class="form-control" value="-" readonly>
                                             @endif
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Deskripsi</th>
-                                        <td>: {{ $pengaduan->deskripsi }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Status</th>
-                                        <td>:
-                                            <span class="badge badge-sm bg-gradient-{{ $pengaduan->status == 'Selesai' ? 'success' : ($pengaduan->status == 'Proses' ? 'warning' : 'danger') }}">
-                                                {{ $pengaduan->status }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Korban Jiwa</th>
-                                        <td>: {{ $pengaduan->korban_jiwa ?? '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Kerusakan Infrastruktur</th>
-                                        <td>: {{ $pengaduan->kerusakan_infrastruktur ?? '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="ps-0">Kerusakan Material</th>
-                                        <td>: {{ $pengaduan->kerusakan_material ?? '-' }}</td>
-                                    </tr>
-                                    @php
-                                        $mediaUris = json_decode($pengaduan->media_uri, true) ?? [];
-                                        $mediaTypes = json_decode($pengaduan->media_type, true) ?? [];
-                                    @endphp
-                                    @if(count($mediaUris) > 0)
-                                    <tr>
-                                        <th class="ps-0">Bukti Media</th>
-                                        <td>:
-                                            <div id="carouselBukti" class="carousel slide" data-bs-ride="carousel" style="max-width:300px;">
-                                                <div class="carousel-inner">
-                                                    @foreach($mediaUris as $i => $url)
-                                                        <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
-                                                            @if(isset($mediaTypes[$i]) && Str::contains($mediaTypes[$i], 'image'))
-                                                                <img src="{{ url($url) }}" class="d-block w-100 bukti-hover" style="max-height:250px;object-fit:contain;" alt="Bukti" onclick="showZoomCarousel(@json($mediaUris), {{ $i }}, false)">
-                                                            @elseif(isset($mediaTypes[$i]) && Str::contains($mediaTypes[$i], 'video'))
-                                                                <video controls class="d-block w-100 bukti-hover" style="max-height:250px;object-fit:contain;" onclick="showZoomCarousel(@json($mediaUris), {{ $i }}, false)">
-                                                                    <source src="{{ url($url) }}" type="{{ $mediaTypes[$i] }}">
-                                                                </video>
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                                @if(count($mediaUris) > 1)
-                                                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselBukti" data-bs-slide="prev">
-                                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                        <span class="visually-hidden">Previous</span>
-                                                    </button>
-                                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselBukti" data-bs-slide="next">
-                                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                        <span class="visually-hidden">Next</span>
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label fw-bold">Deskripsi</label>
+                                        <textarea class="form-control" rows="3" readonly>{{ $pengaduan->deskripsi }}</textarea>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label fw-bold">Bukti (Foto/Video) dari Masyarakat</label>
+                                        <div>
+                                            @if($pengaduan->bukti)
+                                                @foreach(json_decode($pengaduan->bukti, true) ?? [] as $bukti)
+                                                    @if(Str::endsWith(strtolower($bukti), ['.jpg', '.jpeg', '.png', '.gif']))
+                                                        <img src="{{ asset('storage/' . $bukti) }}" alt="Bukti" class="img-fluid mb-2 me-2" style="max-height: 120px;">
+                                                    @elseif(Str::endsWith(strtolower($bukti), ['.mp4', '.mov', '.avi']))
+                                                        <video controls class="img-fluid mb-2 me-2" style="max-height: 120px;">
+                                                            <source src="{{ asset('storage/' . $bukti) }}">
+                                                        </video>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                <span class="text-muted">Tidak ada bukti</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Bagian Tengah: Verifikasi Admin -->
+                                <div class="border rounded p-3 mb-4">
+                                    <label class="form-label fw-bold">Verifikasi Laporan</label>
+                                    <div class="mb-2">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="verifikasi" id="verifikasi_terima" value="diterima" {{ $pengaduan->verifikasi == 'diterima' ? 'checked' : '' }} disabled>
+                                            <label class="form-check-label" for="verifikasi_terima">Diterima</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="verifikasi" id="verifikasi_tolak" value="ditolak" {{ $pengaduan->verifikasi == 'ditolak' ? 'checked' : '' }} disabled>
+                                            <label class="form-check-label" for="verifikasi_tolak">Ditolak</label>
+                                        </div>
+                                    </div>
+                                    <!-- Jika diterima, tampilkan tindak lanjut -->
+                                    @if($pengaduan->verifikasi == 'diterima')
+                                    <div id="tindak-lanjut-section">
+                                        <label class="form-label fw-bold">Status Tindak Lanjut</label>
+                                        <select class="form-control mb-2" name="tindak_lanjut_status" disabled>
+                                            <option value="Menunggu" {{ $pengaduan->tindak_lanjut_status == 'Menunggu' ? 'selected' : '' }}>Menunggu</option>
+                                            <option value="Proses" {{ $pengaduan->tindak_lanjut_status == 'Proses' ? 'selected' : '' }}>Proses</option>
+                                            <option value="Selesai" {{ $pengaduan->tindak_lanjut_status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
+                                        </select>
+                                    </div>
                                     @endif
-                                </table>
+                                </div>
+                                <!-- Bagian Bawah: Tindak Lanjut Admin -->
+                                <div class="border rounded p-3 mb-4">
+                                    <label class="form-label fw-bold">Tindak Lanjut Admin</label>
+                                    <div class="mb-2">
+                                        <label>Bukti Penanganan (Foto/Video)</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @php
+                                                $buktiAdmin = json_decode($pengaduan->bukti, true) ?? [];
+                                            @endphp
+                                            @if(count($buktiAdmin) > 0)
+                                                @foreach($buktiAdmin as $bukti)
+                                                    @if(Str::endsWith(strtolower($bukti), ['.jpg', '.jpeg', '.png', '.gif']))
+                                                        <img src="{{ asset('storage/' . $bukti) }}" alt="Bukti Admin" class="img-fluid mb-2 me-2" style="max-height: 120px;">
+                                                    @elseif(Str::endsWith(strtolower($bukti), ['.mp4', '.mov', '.avi']))
+                                                        <video controls class="img-fluid mb-2 me-2" style="max-height: 120px;">
+                                                            <source src="{{ asset('storage/' . $bukti) }}">
+                                                        </video>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                <span class="text-muted">Tidak ada bukti penanganan</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label>Keterangan Korban Jiwa</label>
+                                        <input type="number" class="form-control" value="{{ $pengaduan->korban_jiwa }}" readonly>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label>Kerusakan Infrastruktur</label>
+                                        <input type="text" class="form-control" value="{{ $pengaduan->kerusakan_infrastruktur }}" readonly>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label>Kerusakan Material</label>
+                                        <input type="text" class="form-control" value="{{ $pengaduan->kerusakan_material }}" readonly>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Kolom Data Pelapor -->
                             <div class="col-md-6 mb-3">
@@ -160,57 +172,7 @@
                                 @endif
                             </div>
                         </div>
-                        <!-- Section Feedback Admin -->
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <div class="card border border-primary">
-                                    <div class="card-header bg-primary text-white">
-                                        <h6 class="mb-0">Feedback Admin</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        @php
-                                            $buktiAdmin = json_decode($pengaduan->bukti, true) ?? [];
-                                        @endphp
-                                        @if($pengaduan->feedback)
-                                            <p>{{ $pengaduan->feedback }}</p>
-                                            @if(count($buktiAdmin) > 0)
-                                                <div id="carouselBuktiAdmin" class="carousel slide" data-bs-ride="carousel" style="max-width:400px;">
-                                                    <div class="carousel-inner">
-                                                        @foreach($buktiAdmin as $i => $url)
-                                                            @php
-                                                                $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
-                                                            @endphp
-                                                            <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
-                                                                @if(in_array($ext, ['jpg','jpeg','png','gif','webp']))
-                                                                    <img src="{{ asset('storage/' . $url) }}" class="d-block w-100 bukti-hover" style="max-height:300px;object-fit:contain;" alt="Bukti Admin" onclick="showZoomCarousel(@json($buktiAdmin), {{ $i }}, true)">
-                                                                @elseif(in_array($ext, ['mp4','webm','ogg']))
-                                                                    <video controls class="d-block w-100 bukti-hover" style="max-height:300px;object-fit:contain;" onclick="showZoomCarousel(@json($buktiAdmin), {{ $i }}, true)">
-                                                                        <source src="{{ asset('storage/' . $url) }}" type="video/{{ $ext }}">
-                                                                        Browser tidak mendukung video.
-                                                                    </video>
-                                                                @endif
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                    @if(count($buktiAdmin) > 1)
-                                                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselBuktiAdmin" data-bs-slide="prev">
-                                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                            <span class="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button class="carousel-control-next" type="button" data-bs-target="#carouselBuktiAdmin" data-bs-slide="next">
-                                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                            <span class="visually-hidden">Next</span>
-                                                        </button>
-                                                    @endif
-                                                </div>
-                                            @endif
-                                        @else
-                                            <p class="text-muted mb-0">Belum ada feedback dari admin.</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {{-- Section Feedback Admin dihilangkan sesuai permintaan --}}
                     </div>
                 </div>
             </div>

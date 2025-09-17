@@ -6,18 +6,20 @@ import { FontAwesome5 } from '@expo/vector-icons'; // Masih dibutuhkan jika ada 
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const educations = [
-  { id: 1, name: "Tanah Longsor", image: require('@/assets/images/Longsor.png') },
-  { id: 2, name: "Gempa Bumi", image: require('@/assets/images/Gempa.png') },
-  { id: 3, name: "Banjir", image: require('@/assets/images/Banjir.png') },
-  { id: 4, name: "Erupsi Gunung Berapi", image: require('@/assets/images/Erupsi.png') },
-  { id: 5, name: "Angin Puting Beliung", image: require('@/assets/images/Tornado.png') },
-  { id: 6, name: "Tsunami", image: require('@/assets/images/Tsunami.png') }
-];
+
+import { useEffect, useState } from 'react';
+import { API_URL } from '../api/config';
+
 
 const Homepage: React.FC = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const [educations, setEducations] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API_URL}/jenis-bencana`)
+      .then(res => res.json())
+      .then(json => setEducations(Array.isArray(json.data) ? json.data : []));
+  }, []);
 
   const handleReportPress = () => {
     router.push('/LaporBencana');
@@ -31,7 +33,7 @@ const Homepage: React.FC = () => {
     }
   };
 
-  const handlePenyuluhanPress = () => { // Fungsi untuk tombol Penyuluhan
+  const handlePenyuluhanPress = () => {
     router.push('/PenyuluhanScreen');
   };
 
@@ -98,9 +100,9 @@ const Homepage: React.FC = () => {
               <TouchableOpacity
                 key={item.id}
                 style={styles.horizontalItemCard}
-                onPress={() => handleEducationListPress(item.name)}>
-                <Image source={item.image} style={styles.horizontalItemImage} />
-                <Text style={styles.horizontalItemLabel}>{item.name}</Text>
+                onPress={() => handleEducationListPress(item.nama_jenis)}>
+                <Image source={require('@/assets/images/Banjir.png')} style={styles.horizontalItemImage} />
+                <Text style={styles.horizontalItemLabel}>{item.nama_jenis}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
